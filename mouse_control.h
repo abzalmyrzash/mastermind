@@ -11,5 +11,5 @@ bool is_mouse_in_circle(float mouseX, float mouseY,
 
 bool is_mouse_in_rect(float mouseX, float mouseY, SDL_FRect* rect) {
 	return (mouseX > rect->x && mouseX < rect->x + rect->w) &&
-		(mouseY > rect->y && mouseY < rect->y + rect->y);
+		(mouseY > rect->y && mouseY < rect->y + rect->h);
 }

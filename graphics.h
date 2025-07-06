@@ -10,19 +10,77 @@ void render_rect(SDL_Renderer* renderer,
 			SDL_FRect* rect, int width,
 			const SDL_Color* color, const SDL_Color* borderColor)
 {
-	set_color(renderer, borderColor);
+	if (borderColor != NULL) set_color(renderer, borderColor);
 	for (int i = 1; i <= width; i++) {
 		SDL_FRect borderRect = {rect->x - i, rect->y - i,
 								rect->w + 2*i, rect->h + 2*i};
 		SDL_RenderRect(renderer, &borderRect);
 	}
-	set_color(renderer, color);
+	if (color != NULL) set_color(renderer, color);
 	SDL_RenderFillRect(renderer, rect);
+}
+
+void render_circle_int(SDL_Renderer* renderer,
+		int centreX, int centreY, int radius, int width,
+		const SDL_Color* color, const SDL_Color* borderColor) {
+	// algorithm calculates an octant of circle and mirrors it using this array
+	if (color != NULL) set_color(renderer, color);
+	const int diameter = (radius * 2);
+
+	int x = (radius - 1);
+	int y = 0;
+	int tx = 1;
+	int ty = 1;
+	int error = (tx - diameter);
+	int leftX, rightX, leftXy, rightXy;
+	int topY, bottomY, topYx, bottomYx;
+
+	while (x >= y)
+	{
+		leftX = centreX - x;
+		rightX = centreX + x;
+		leftXy = centreX - y;
+		rightXy = centreX + y;
+
+		topY = centreY - y;
+		bottomY = centreY + y;
+		topYx = centreY - x;
+		bottomYx = centreY + x;
+
+		//  Each of the following renders an octant of the circle
+		SDL_RenderLine(renderer, leftX, topY, leftX, bottomY);
+		SDL_RenderLine(renderer, rightX, topY, rightX, bottomY);
+		SDL_RenderLine(renderer, leftXy, topYx, leftXy, bottomYx);
+		SDL_RenderLine(renderer, rightXy, topYx, rightXy, bottomYx);
+
+		//SDL_RenderPoint(renderer, leftX, topY);
+		//SDL_RenderPoint(renderer, leftX, bottomY);
+		//SDL_RenderPoint(renderer, rightX, topY);
+		//SDL_RenderPoint(renderer, rightX, bottomY);
+		//SDL_RenderPoint(renderer, leftXy, topYx);
+		//SDL_RenderPoint(renderer, leftXy, bottomYx);
+		//SDL_RenderPoint(renderer, rightXy, topYx);
+		//SDL_RenderPoint(renderer, rightXy, bottomYx);
+
+		if (error <= 0)
+		{
+			++y;
+			error += ty;
+			ty += 2;
+		}
+
+		if (error > 0)
+		{
+			--x;
+			tx += 2;
+			error += (tx - diameter);
+		}
+	}
 }
 
 void render_circle(SDL_Renderer* renderer,
 		float x, float y, float r, float width,
-		const SDL_Color* inside, const SDL_Color* border) {
+		const SDL_Color* color, const SDL_Color* borderColor) {
 	// algorithm calculates an octant of circle and mirrors it using this array
 	int mirrors[4][2] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
@@ -50,19 +108,19 @@ void render_circle(SDL_Renderer* renderer,
 			pxm2 = x + dy2 * mirrors[i][0];
 			pym2 = y + dx2 * mirrors[i][1];
 			// draw inside
-			if (dx <= max_dx) {
-				set_color(renderer, inside);
+			if (dx <= max_dx && color != NULL) {
+				set_color(renderer, color);
 
 				//SDL_RenderPoint(renderer, px, py);
 				//SDL_RenderPoint(renderer, pxm, pym);
 				SDL_RenderLine(renderer, px, py, px, y);
 				SDL_RenderLine(renderer, pxm, pym, pxm, y);
 
-				set_color(renderer, border);
 			}
 			
 			// draw border
-			if (width > 0) {
+			if (width > 0 && borderColor != NULL) {
+				set_color(renderer, borderColor);
 				SDL_RenderLine(renderer, px, py2, px, py);
 				SDL_RenderLine(renderer, pxm2, pym, pxm2, pym2);
 			}
