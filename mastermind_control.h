@@ -16,7 +16,7 @@ void onClick(float x, float y, GameVariables* vars) {
 		}
 	}
 
-	if (*vars->gameState != GAME_ONGOING) return;
+	if (vars->gameState != GAME_ONGOING) return;
 
 	for (int i = 0; i < NUM_CLICKABLE_PEGS; i++) {
 		Peg* peg = clickablePegs + i;
@@ -56,7 +56,7 @@ void onRelease(float x, float y, GameVariables* vars) {
 		int row = i / CODE_LENGTH;
 		Peg* peg = clickablePegs + i;
 		if (is_mouse_on_peg(x, y, peg)) {
-			if (peg->type == PEG_TYPE_HOLE && row == *vars->curGuess) {
+			if (peg->type == PEG_TYPE_HOLE && row == vars->curGuess) {
 				if (vars->peg->type == PEG_TYPE_HOLE) {
 					swap_peg_values(peg, vars->peg);
 				}
@@ -80,22 +80,22 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 	switch(key)
 	{
 	case SDLK_ESCAPE:
-		*vars->gameState = GAME_QUIT;
+		vars->gameState = GAME_QUIT;
 		break;
 	case SDLK_RETURN:
-		check_guess(vars->curGuess,
-					(*vars->guesses)[*vars->curGuess],
-					*vars->code,
-					(*vars->keys)[*vars->curGuess],
-					vars->gameState);
+		check_guess(&vars->curGuess,
+					vars->guesses[vars->curGuess],
+					vars->code,
+					vars->keys[vars->curGuess],
+					&vars->gameState);
 		vars->needsRerender = true;
 		break;
 	case SDLK_R:
-		make_random_guess(*vars->curGuess, *vars->guesses);
+		make_random_guess(vars->curGuess, vars->guesses);
 		vars->needsRerender = true;
 		break;
 	case SDLK_B:
-		make_smart_guess(*vars->curGuess, *vars->guesses, *vars->keys);
+		make_smart_guess(vars->curGuess, vars->guesses, vars->keys);
 		vars->needsRerender = true;
 		break;
 	case SDLK_SPACE:
@@ -104,28 +104,28 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 		break;
 	case SDLK_DELETE:
 		for (int i = 0; i < CODE_LENGTH; i++) {
-			(*vars->guesses)[*vars->curGuess][i] = CODE_BLANK;
+			(vars->guesses)[vars->curGuess][i] = CODE_BLANK;
 		}
-		*vars->cursor = 0;
+		vars->cursor = 0;
 		vars->needsRerender = true;
 		break;
 	case SDLK_BACKSPACE:
-		if (--(*vars->cursor) < 0) *vars->cursor = 0;
-		(*vars->guesses)[*vars->curGuess][*vars->cursor] = CODE_BLANK;
+		if (--(vars->cursor) < 0) vars->cursor = 0;
+		vars->guesses[vars->curGuess][vars->cursor] = CODE_BLANK;
 		vars->needsRerender = true;
 		break;
 	default:
 		if (key >= SDLK_0 && key <= SDLK_6) {
-			if (*vars->cursor >= CODE_LENGTH) {
-				*vars->cursor = 0;
+			if (vars->cursor >= CODE_LENGTH) {
+				vars->cursor = 0;
 				for (int i = 0; i < CODE_LENGTH; i++) {
-					(*vars->guesses)[*vars->curGuess][i] = CODE_BLANK;
+					(vars->guesses)[vars->curGuess][i] = CODE_BLANK;
 				}
 			}
 			char value = key - SDLK_1;
 			if (value < 0) value = CODE_BLANK;
-			(*vars->guesses)[*vars->curGuess][*vars->cursor] = value;
-			(*vars->cursor)++;
+			vars->guesses[vars->curGuess][vars->cursor] = value;
+			(vars->cursor)++;
 		}
 		vars->needsRerender = true;
 		break;

@@ -6,13 +6,13 @@
 
 int check_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED
-		&& *vars->gameState == GAME_ONGOING)
+		&& vars->gameState == GAME_ONGOING)
 	{
-		check_guess(vars->curGuess,
-					(*vars->guesses)[*vars->curGuess],
-					*vars->code,
-					(*vars->keys)[*vars->curGuess],
-					vars->gameState);
+		check_guess(&vars->curGuess,
+					vars->guesses[vars->curGuess],
+					vars->code,
+					vars->keys[vars->curGuess],
+					&vars->gameState);
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
@@ -30,10 +30,10 @@ int reset_button_action (ButtonState* buttonState, GameVariables* vars) {
 
 int resign_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED &&
-		*vars->gameState == GAME_ONGOING)
+		vars->gameState == GAME_ONGOING)
 	{
 		printf("YOU RESIGNED!\n");
-		*vars->gameState = GAME_LOST;
+		vars->gameState = GAME_LOST;
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
@@ -42,16 +42,16 @@ int resign_button_action (ButtonState* buttonState, GameVariables* vars) {
 
 int quit_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED) {
-		*vars->gameState = GAME_QUIT;
+		vars->gameState = GAME_QUIT;
 	}
 	return 0;
 }
 
 int random_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED
-		&& *vars->gameState == GAME_ONGOING)
+		&& vars->gameState == GAME_ONGOING)
 	{
-		make_random_guess(*vars->curGuess, *vars->guesses);
+		make_random_guess(vars->curGuess, vars->guesses);
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
@@ -60,9 +60,9 @@ int random_button_action (ButtonState* buttonState, GameVariables* vars) {
 
 int smart_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED
-		&& *vars->gameState == GAME_ONGOING)
+		&& vars->gameState == GAME_ONGOING)
 	{
-		make_smart_guess(*vars->curGuess, *vars->guesses, *vars->keys);
+		make_smart_guess(vars->curGuess, vars->guesses, vars->keys);
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}

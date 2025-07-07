@@ -16,31 +16,17 @@ int main() {
 		windowFlags, &window, &renderer);
 	printf("%s\n", SDL_GetError());
 
-	int curGuess;
-	GameState gameState;
-	char code[4];
-	char guesses[NUM_GUESSES][CODE_LENGTH];
-	char keys[NUM_GUESSES][CODE_LENGTH];
+	GameVariables vars;
+	vars.renderer = renderer;
+	vars.peg = NULL;
 
-	reset_game(&gameState, &curGuess, guesses, keys);
-	generate_random_code(code);
-	reset_code_breaker();
+	reset_everything(&vars);
 	
-	init_graphics_variables(guesses);
+	init_graphics_variables(vars.guesses);
 	init_buttons();
-	int cursor = 0;
 
-	GameVariables gameVars;
-	gameVars.gameState = &gameState;
-	gameVars.curGuess = &curGuess;
-	gameVars.code = &code;
-	gameVars.guesses = &guesses;
-	gameVars.keys = &keys;
-	gameVars.peg = NULL;
-	gameVars.cursor = &cursor;
-	gameVars.renderer = renderer;
-	gameVars.needsRerender = true;
-	render_everything(&gameVars);
+	render_everything(&vars);
+
 	char guess_str[4], guess[4], key[4];
 
 	SDL_Event e;
@@ -48,36 +34,36 @@ int main() {
 	int numKeys;
 	bool* keyStates;
 
-	while (gameState != GAME_QUIT){
+	while (vars.gameState != GAME_QUIT){
 		SDL_WaitEvent(&e);
 		switch(e.type) 
 		{
 	    case SDL_EVENT_QUIT:
-			gameState = GAME_QUIT;
+			vars.gameState = GAME_QUIT;
 			break;
 		case SDL_EVENT_WINDOW_RESIZED:
 			SDL_GetWindowSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 			calculate_graphics_variables();
-			render_everything(&gameVars);
+			render_everything(&vars);
 	    case SDL_EVENT_KEY_DOWN:
-			onKeyDown(e.key.key, &gameVars);
+			onKeyDown(e.key.key, &vars);
 			break;
 	    case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			SDL_GetMouseState(&mouseX, &mouseY);
-			onClick(mouseX, mouseY, &gameVars);
+			onClick(mouseX, mouseY, &vars);
 	    	break;
 		case SDL_EVENT_MOUSE_MOTION:
 			SDL_GetMouseState(&mouseX, &mouseY);
-			onMove(mouseX, mouseY, &gameVars);
+			onMove(mouseX, mouseY, &vars);
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_UP:
 			SDL_GetMouseState(&mouseX, &mouseY);
-			onRelease(mouseX, mouseY, &gameVars);
+			onRelease(mouseX, mouseY, &vars);
 			break;
 		default:
 			break;
 		}
-		render_everything(&gameVars);
+		render_everything(&vars);
 	}
 	SDL_DestroyWindow(window);
 	SDL_Quit();

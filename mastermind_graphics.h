@@ -236,7 +236,7 @@ void render_everything(GameVariables* vars) {
 	SDL_RenderClear(vars->renderer);
 	
 	render_board(vars->renderer);
-	render_rows(vars->renderer, *vars->curGuess, *vars->guesses, *vars->keys, vars->peg);
+	render_rows(vars->renderer, vars->curGuess, vars->guesses, vars->keys, vars->peg);
 	render_selection(vars->renderer, vars->peg);
 
 	for (int i = 0; i < NUM_BUTTONS; i++) {
@@ -245,10 +245,10 @@ void render_everything(GameVariables* vars) {
 
 	render_selected_peg(vars->renderer, vars->peg);
 
-	if (*vars->gameState == GAME_WON ||
-		*vars->gameState == GAME_LOST)
+	if (vars->gameState == GAME_WON ||
+		vars->gameState == GAME_LOST)
 	{
-		render_correct_code(vars->renderer, *vars->code);
+		render_correct_code(vars->renderer, vars->code);
 	} else {
 		
 	}
