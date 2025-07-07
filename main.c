@@ -71,7 +71,7 @@ int main() {
 
 	Uint64 timeAtStart = SDL_GetTicksNS();
 	Uint64 timeElapsed;
-	long long timeRemaining;
+	long long timeRemaining = 0;
 
 	while (gameState != GAME_QUIT){
 		timeAtStart = SDL_GetTicksNS();
@@ -105,9 +105,10 @@ int main() {
 			}
 	    }
 		timeElapsed = SDL_GetTicksNS() - timeAtStart;
-		timeRemaining = refreshTimeNS - timeElapsed;
+		timeRemaining += refreshTimeNS - timeElapsed;
 		if (timeRemaining > 0) {
 			SDL_DelayNS(timeRemaining);
+			timeRemaining = 0;
 		} else {
 //			printf("%f\n", timeRemaining / 1e6);
 		}

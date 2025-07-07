@@ -20,7 +20,7 @@ void onClick(float x, float y, GameVariables* vars) {
 
 	for (int i = 0; i < NUM_CLICKABLE_PEGS; i++) {
 		Peg* peg = clickablePegs + i;
-		if (is_mouse_in_circle(x, y, peg->x, peg->y, code_peg_radius)) {
+		if (is_mouse_on_peg(x, y, peg)) {
 			vars->peg = peg;
 			peg->isClicked = true;
 		}
@@ -45,11 +45,17 @@ void onRelease(float x, float y, GameVariables* vars) {
 	}
 
 	if (vars->peg == NULL) return;
+
+	int i = *vars->peg->ptr;
+	vars->peg->x = vars->peg->xOrig;
+	vars->peg->y = vars->peg->yOrig;
+	vars->peg->isClicked = false;
+
 	bool clickedOnHole = false;
 	for (int i = 0; i < NUM_HOLES; i++) {
 		int row = i / CODE_LENGTH;
 		Peg* peg = clickablePegs + i;
-		if (is_mouse_in_circle(x, y, peg->x, peg->y, code_peg_radius)) {
+		if (is_mouse_on_peg(x, y, peg)) {
 			if (peg->type == PEG_TYPE_HOLE && row == *vars->curGuess) {
 				if (vars->peg->type == PEG_TYPE_HOLE) {
 					swap_peg_values(peg, vars->peg);
@@ -62,10 +68,11 @@ void onRelease(float x, float y, GameVariables* vars) {
 			break;
 		}
 	}
-	int i = *vars->peg->ptr;
-	vars->peg->x = vars->peg->xOrig;
-	vars->peg->y = vars->peg->yOrig;
-	vars->peg->isClicked = false;
+	if (!clickedOnHole) {
+		if (vars->peg->type == PEG_TYPE_HOLE) {
+			*vars->peg->ptr = CODE_BLANK;
+		}
+	}
 	render_everything(vars);
 }
 
@@ -83,11 +90,6 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 					vars->gameState);
 		render_everything(vars);
 		break;
-	case SDLK_BACKSPACE:
-		if (--(*vars->cursor) < 0) *vars->cursor = 0;
-		(*vars->guesses)[*vars->curGuess][*vars->cursor] = CODE_BLANK;
-		render_everything(vars);
-		break;
 	case SDLK_R:
 		make_random_guess(*vars->curGuess, *vars->guesses);
 		render_everything(vars);
@@ -98,6 +100,18 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 		break;
 	case SDLK_SPACE:
 		reset_everything(vars);
+		render_everything(vars);
+		break;
+	case SDLK_DELETE:
+		for (int i = 0; i < CODE_LENGTH; i++) {
+			(*vars->guesses)[*vars->curGuess][i] = CODE_BLANK;
+		}
+		*vars->cursor = 0;
+		render_everything(vars);
+		break;
+	case SDLK_BACKSPACE:
+		if (--(*vars->cursor) < 0) *vars->cursor = 0;
+		(*vars->guesses)[*vars->curGuess][*vars->cursor] = CODE_BLANK;
 		render_everything(vars);
 		break;
 	default:
