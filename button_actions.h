@@ -13,7 +13,7 @@ int check_button_action (ButtonState* buttonState, GameVariables* vars) {
 					*vars->code,
 					(*vars->keys)[*vars->curGuess],
 					vars->gameState);
-		render_everything(vars);
+		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;
@@ -22,7 +22,7 @@ int check_button_action (ButtonState* buttonState, GameVariables* vars) {
 int reset_button_action (ButtonState* buttonState, GameVariables* vars) {
 	if (*buttonState == BUTTON_RELEASED) {
 		reset_everything(vars);
-		render_everything(vars);
+		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;
@@ -34,7 +34,7 @@ int resign_button_action (ButtonState* buttonState, GameVariables* vars) {
 	{
 		printf("YOU RESIGNED!\n");
 		*vars->gameState = GAME_LOST;
-		render_everything(vars);
+		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;
@@ -52,7 +52,7 @@ int random_button_action (ButtonState* buttonState, GameVariables* vars) {
 		&& *vars->gameState == GAME_ONGOING)
 	{
 		make_random_guess(*vars->curGuess, *vars->guesses);
-		render_everything(vars);
+		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;
@@ -63,7 +63,7 @@ int smart_button_action (ButtonState* buttonState, GameVariables* vars) {
 		&& *vars->gameState == GAME_ONGOING)
 	{
 		make_smart_guess(*vars->curGuess, *vars->guesses, *vars->keys);
-		render_everything(vars);
+		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;

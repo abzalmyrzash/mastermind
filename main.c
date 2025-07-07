@@ -16,28 +16,6 @@ int main() {
 		windowFlags, &window, &renderer);
 	printf("%s\n", SDL_GetError());
 
-//	if (SDL_SetRenderVSync(renderer, 1)) {
-//		printf("VSync successful!\n");
-//	} else {
-//		printf("VSync failed!\n");
-//	}
-
-//	Uint64 timeStart = SDL_GetTicksNS();
-//	for (int i = 0; i < 1000; i++) {
-//	render_circle(renderer, 200, 200, 100, 10,
-//		&COLOR_RED, &COLOR_BLACK);
-//	}
-//	Uint64 renderTime = SDL_GetTicksNS() - timeStart;
-//	printf("%f\n", renderTime / 1.0e6);
-	
-	SDL_DisplayID displayID = SDL_GetDisplayForWindow(window);
-	const SDL_DisplayMode* displayMode = SDL_GetCurrentDisplayMode(displayID);
-	float refreshRate = displayMode->refresh_rate;
-	
-	printf("Refresh rate: %f\n", refreshRate);
-	Uint64 refreshTimeNS = 1e9 / refreshRate;
-	printf("Refresh time in nanoseconds: %d\n", refreshTimeNS);
-
 	int curGuess;
 	GameState gameState;
 	char code[4];
@@ -61,6 +39,7 @@ int main() {
 	gameVars.peg = NULL;
 	gameVars.cursor = &cursor;
 	gameVars.renderer = renderer;
+	gameVars.needsRerender = true;
 	render_everything(&gameVars);
 	char guess_str[4], guess[4], key[4];
 
@@ -69,49 +48,36 @@ int main() {
 	int numKeys;
 	bool* keyStates;
 
-	Uint64 timeAtStart = SDL_GetTicksNS();
-	Uint64 timeElapsed;
-	long long timeRemaining = 0;
-
 	while (gameState != GAME_QUIT){
-		timeAtStart = SDL_GetTicksNS();
-	    while (SDL_PollEvent(&e)){
-			switch(e.type) 
-			{
-	        case SDL_EVENT_QUIT:
-				gameState = GAME_QUIT;
-				break;
-			case SDL_EVENT_WINDOW_RESIZED:
-				SDL_GetWindowSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
-				calculate_graphics_variables();
-				render_everything(&gameVars);
-	        case SDL_EVENT_KEY_DOWN:
-				onKeyDown(e.key.key, &gameVars);
-				break;
-	        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-				SDL_GetMouseState(&mouseX, &mouseY);
-				onClick(mouseX, mouseY, &gameVars);
-	        	break;
-			case SDL_EVENT_MOUSE_MOTION:
-				SDL_GetMouseState(&mouseX, &mouseY);
-				onMove(mouseX, mouseY, &gameVars);
-				break;
-			case SDL_EVENT_MOUSE_BUTTON_UP:
-				SDL_GetMouseState(&mouseX, &mouseY);
-				onRelease(mouseX, mouseY, &gameVars);
-				break;
-			default:
-				break;
-			}
-	    }
-		timeElapsed = SDL_GetTicksNS() - timeAtStart;
-		timeRemaining += refreshTimeNS - timeElapsed;
-		if (timeRemaining > 0) {
-			SDL_DelayNS(timeRemaining);
-			timeRemaining = 0;
-		} else {
-//			printf("%f\n", timeRemaining / 1e6);
+		SDL_WaitEvent(&e);
+		switch(e.type) 
+		{
+	    case SDL_EVENT_QUIT:
+			gameState = GAME_QUIT;
+			break;
+		case SDL_EVENT_WINDOW_RESIZED:
+			SDL_GetWindowSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+			calculate_graphics_variables();
+			render_everything(&gameVars);
+	    case SDL_EVENT_KEY_DOWN:
+			onKeyDown(e.key.key, &gameVars);
+			break;
+	    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			SDL_GetMouseState(&mouseX, &mouseY);
+			onClick(mouseX, mouseY, &gameVars);
+	    	break;
+		case SDL_EVENT_MOUSE_MOTION:
+			SDL_GetMouseState(&mouseX, &mouseY);
+			onMove(mouseX, mouseY, &gameVars);
+			break;
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+			SDL_GetMouseState(&mouseX, &mouseY);
+			onRelease(mouseX, mouseY, &gameVars);
+			break;
+		default:
+			break;
 		}
+		render_everything(&gameVars);
 	}
 	SDL_DestroyWindow(window);
 	SDL_Quit();

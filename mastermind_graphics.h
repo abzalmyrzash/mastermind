@@ -231,6 +231,7 @@ void render_correct_code(SDL_Renderer* renderer, char code[CODE_LENGTH]) {
 }
 
 void render_everything(GameVariables* vars) {
+	if (!vars->needsRerender) return;
 	set_color(vars->renderer, &background_color);
 	SDL_RenderClear(vars->renderer);
 	
@@ -252,5 +253,6 @@ void render_everything(GameVariables* vars) {
 		
 	}
 	SDL_RenderPresent(vars->renderer);
+	vars->needsRerender = false;
 }
 

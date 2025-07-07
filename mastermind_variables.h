@@ -14,6 +14,7 @@ typedef struct {
 	Peg* peg;
 	int* cursor;
 	SDL_Renderer* renderer;
+	bool needsRerender;
 } GameVariables;
 
 void reset_selected_peg(Peg* peg) {

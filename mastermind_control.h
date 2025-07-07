@@ -25,7 +25,7 @@ void onClick(float x, float y, GameVariables* vars) {
 			peg->isClicked = true;
 		}
 	}
-
+	vars->needsRerender = true;
 }
 
 void onMove(float x, float y, GameVariables* vars) {
@@ -33,8 +33,8 @@ void onMove(float x, float y, GameVariables* vars) {
 	if (vars->peg->isClicked) {
 		vars->peg->x = x;
 		vars->peg->y = y;
-		render_everything(vars);
 	}
+	vars->needsRerender = true;
 }
 
 void onRelease(float x, float y, GameVariables* vars) {
@@ -73,7 +73,7 @@ void onRelease(float x, float y, GameVariables* vars) {
 			*vars->peg->ptr = CODE_BLANK;
 		}
 	}
-	render_everything(vars);
+	vars->needsRerender = true;
 }
 
 void onKeyDown(SDL_Keycode key, GameVariables* vars) {
@@ -88,31 +88,31 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 					*vars->code,
 					(*vars->keys)[*vars->curGuess],
 					vars->gameState);
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	case SDLK_R:
 		make_random_guess(*vars->curGuess, *vars->guesses);
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	case SDLK_B:
 		make_smart_guess(*vars->curGuess, *vars->guesses, *vars->keys);
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	case SDLK_SPACE:
 		reset_everything(vars);
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	case SDLK_DELETE:
 		for (int i = 0; i < CODE_LENGTH; i++) {
 			(*vars->guesses)[*vars->curGuess][i] = CODE_BLANK;
 		}
 		*vars->cursor = 0;
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	case SDLK_BACKSPACE:
 		if (--(*vars->cursor) < 0) *vars->cursor = 0;
 		(*vars->guesses)[*vars->curGuess][*vars->cursor] = CODE_BLANK;
-		render_everything(vars);
+		vars->needsRerender = true;
 		break;
 	default:
 		if (key >= SDLK_0 && key <= SDLK_6) {
@@ -126,8 +126,8 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 			if (value < 0) value = CODE_BLANK;
 			(*vars->guesses)[*vars->curGuess][*vars->cursor] = value;
 			(*vars->cursor)++;
-			render_everything(vars);
 		}
+		vars->needsRerender = true;
 		break;
 	}
 }
