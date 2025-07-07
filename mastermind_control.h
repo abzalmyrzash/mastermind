@@ -21,10 +21,6 @@ void onClick(float x, float y, GameVariables* vars) {
 	for (int i = 0; i < NUM_CLICKABLE_PEGS; i++) {
 		Peg* peg = clickablePegs + i;
 		if (is_mouse_in_circle(x, y, peg->x, peg->y, code_peg_radius)) {
-			if (peg->type == PEG_TYPE_HOLE) {
-				*peg->ptr = CODE_BLANK;
-				render_everything(vars);
-			}
 			vars->peg = peg;
 			peg->isClicked = true;
 		}
@@ -34,7 +30,7 @@ void onClick(float x, float y, GameVariables* vars) {
 
 void onMove(float x, float y, GameVariables* vars) {
 	if (vars->peg == NULL) return;
-	if (vars->peg->type == PEG_TYPE_SELECTION && vars->peg->isClicked) {
+	if (vars->peg->isClicked) {
 		vars->peg->x = x;
 		vars->peg->y = y;
 		render_everything(vars);
@@ -49,22 +45,26 @@ void onRelease(float x, float y, GameVariables* vars) {
 	}
 
 	if (vars->peg == NULL) return;
-	if (vars->peg->type != PEG_TYPE_SELECTION) return;
 	bool clickedOnHole = false;
 	for (int i = 0; i < NUM_HOLES; i++) {
 		int row = i / CODE_LENGTH;
 		Peg* peg = clickablePegs + i;
 		if (is_mouse_in_circle(x, y, peg->x, peg->y, code_peg_radius)) {
 			if (peg->type == PEG_TYPE_HOLE && row == *vars->curGuess) {
-				*peg->ptr = *vars->peg->ptr;
+				if (vars->peg->type == PEG_TYPE_HOLE) {
+					swap_peg_values(peg, vars->peg);
+				}
+				else {
+					*peg->ptr = *vars->peg->ptr;
+				}
 				clickedOnHole = true;
 			}
 			break;
 		}
 	}
 	int i = *vars->peg->ptr;
-	vars->peg->x = selection_pegs_xy[i][0];
-	vars->peg->y = selection_pegs_xy[i][1];
+	vars->peg->x = vars->peg->xOrig;
+	vars->peg->y = vars->peg->yOrig;
 	vars->peg->isClicked = false;
 	render_everything(vars);
 }

@@ -7,8 +7,14 @@ typedef enum {
 
 typedef struct {
 	float x, y;
+	float xOrig, yOrig;
 	PegType type;
 	bool isClicked;
 	char* ptr;
 } Peg;
 
+void swap_peg_values(Peg* a, Peg* b) {
+	char tmp = *a->ptr;
+	*a->ptr = *b->ptr;
+	*b->ptr = tmp;
+}

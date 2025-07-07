@@ -101,6 +101,8 @@ void calculate_graphics_variables() {
 
 			clickablePegs[row * CODE_LENGTH + i].x = code_peg_x;
 			clickablePegs[row * CODE_LENGTH + i].y = code_peg_y;
+			clickablePegs[row * CODE_LENGTH + i].xOrig = code_peg_x;
+			clickablePegs[row * CODE_LENGTH + i].yOrig = code_peg_y;
 
 			key_pegs_xy[row][i][0] = key_peg_offset_x
 									+ key_peg_mutual_dist * (i % 2);
@@ -120,6 +122,8 @@ void calculate_graphics_variables() {
 
 		clickablePegs[NUM_HOLES + i].x = x;
 		clickablePegs[NUM_HOLES + i].y = y;
+		clickablePegs[NUM_HOLES + i].xOrig = x;
+		clickablePegs[NUM_HOLES + i].yOrig = y;
 	}
 }
 
@@ -155,7 +159,7 @@ void render_selection(SDL_Renderer* renderer, Peg* selectedPeg) {
 }
 
 void render_selected_peg(SDL_Renderer* renderer, Peg* peg) {
-	if (peg != NULL && peg->type == PEG_TYPE_SELECTION) {
+	if (peg != NULL) {
 		render_circle(renderer,
 			peg->x, peg->y,
 			code_peg_radius, code_peg_border_width,
@@ -169,7 +173,7 @@ void render_board(SDL_Renderer* renderer) {
 }
 
 void render_row(SDL_Renderer* renderer, int row, int curGuess,
-		char guess[CODE_LENGTH], char key[CODE_LENGTH])
+		char guess[CODE_LENGTH], char key[CODE_LENGTH], Peg* selectedPeg)
 {
 	const SDL_Color* row_peg_color = &COLOR_BLANK;
 	if (row == curGuess) row_peg_color = &COLOR_WHITE;
@@ -182,12 +186,15 @@ void render_row(SDL_Renderer* renderer, int row, int curGuess,
 		&peg_border_color);
 
 	for (int i = 0; i < CODE_LENGTH; i++) {
+		const SDL_Color* color = color_map[guess[i]];
+		if (selectedPeg != NULL && selectedPeg->ptr == &guess[i])
+			color = &COLOR_BLANK;
 		render_circle(renderer,
 			code_pegs_xy[row][i][0],
 			code_pegs_xy[row][i][1],
 			code_peg_radius,
 			code_peg_border_width,
-			color_map[guess[i]],
+			color,
 			&peg_border_color);
 	}
 
@@ -204,10 +211,10 @@ void render_row(SDL_Renderer* renderer, int row, int curGuess,
 
 void render_rows(SDL_Renderer* renderer, int curGuess,
 		char guesses[NUM_GUESSES][CODE_LENGTH],
-		char keys[NUM_GUESSES][CODE_LENGTH]) 
+		char keys[NUM_GUESSES][CODE_LENGTH], Peg* selectedPeg) 
 {
 	for (int i = 0; i < NUM_GUESSES; i++) {
-		render_row(renderer, i, curGuess, guesses[i], keys[i]);
+		render_row(renderer, i, curGuess, guesses[i], keys[i], selectedPeg);
 	}
 }
 
@@ -228,7 +235,7 @@ void render_everything(GameVariables* vars) {
 	SDL_RenderClear(vars->renderer);
 	
 	render_board(vars->renderer);
-	render_rows(vars->renderer, *vars->curGuess, *vars->guesses, *vars->keys);
+	render_rows(vars->renderer, *vars->curGuess, *vars->guesses, *vars->keys, vars->peg);
 	render_selection(vars->renderer, vars->peg);
 
 	for (int i = 0; i < NUM_BUTTONS; i++) {
