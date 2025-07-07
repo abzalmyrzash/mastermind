@@ -34,21 +34,22 @@ void index_to_code(int index, char code[CODE_LENGTH]) {
 	}
 }
 
-static int colorPossibility[NUM_WITH_BLANK];
-// -1 - this color is definitely not present
-// 0 - this color is possibly, but not definitely present
-// 1 to 4 - how many times this color is definitely present
-
 #define IMPOSSIBLE -1
 #define POSSIBLE 0
 #define DEFINITE 1
 #define INDEFINITE -1
 
+static int colorPossibility[NUM_WITH_BLANK];
+// -1 - this color is definitely not present
+// 0 - this color is possibly, but not definitely present
+// 1 to 4 - how many times this color is definitely present
 static int numPossibleColors;
+
 
 static int definitePositions[CODE_LENGTH];
 // -1 - this code position is unknown
 // 0 to 6 - code position is definitely this color
+static int numDefinitePositions;
 
 static bool codePossibility[CODE_SPACE];
 
@@ -57,6 +58,8 @@ static int prevGuessI;
 
 static int numDefiniteColors;
 static int numUniqDefiniteColors;
+
+static int definiteColors[CODE_LENGTH];
 
 // what positions are possible/impossible/definite for a color
 static int positionPossibility[NUM_WITH_BLANK][CODE_LENGTH];
@@ -157,6 +160,7 @@ void analyze_prev_guesses(int curGuessI,
 					if (isColorDefinite(guess[j])) {
 						definitePositions[j] = guess[j];
 						positionPossibility[guess[j]][j] = DEFINITE;
+						numDefinitePositions++;
 						numDefPosForColor[guess[j]]++;
 						numPosPosForColor[guess[j]]--;
 					}
@@ -171,11 +175,11 @@ void analyze_prev_guesses(int curGuessI,
 			}
 		}
 		else if (numNewUniqColors == 1) {
-			for (int j = 0; j < CODE_LENGTH; j++) {
-				if (isColorPossible(guess[j])) {
-					colorPossibility[guess[j]] = numNewCorrectColors;
+			for (int j = 0; j < numUniqColors; j++) {
+				if (isColorPossible(uniqColors[j])) {
+					colorPossibility[uniqColors[j]] = numNewCorrectColors;
 					numDefiniteColors += numNewCorrectColors;
-					numUniqDefiniteColors++;
+					definiteColors[numUniqDefiniteColors++] = uniqColors[j];
 					numPossibleColors--;
 					break;
 				}
@@ -187,6 +191,9 @@ void analyze_prev_guesses(int curGuessI,
 			for (int j = 0; j < NUM_WITH_BLANK; j++) {
 				if (colorPossibility[j] == POSSIBLE) {
 					colorPossibility[j] = IMPOSSIBLE;
+					for (int k = 0; k < CODE_LENGTH; k++) {
+						positionPossibility[j][k] = IMPOSSIBLE;
+					}
 					numPossibleColors--;
 				}
 			}
@@ -195,6 +202,8 @@ void analyze_prev_guesses(int curGuessI,
 			for (int j = 0; j < NUM_WITH_BLANK; j++) {
 				if (colorPossibility[j] == POSSIBLE) {
 					colorPossibility[j] = CODE_LENGTH - numDefiniteColors;
+					numDefiniteColors = CODE_LENGTH;
+					definiteColors[numUniqDefiniteColors++] = j;
 					numPossibleColors--;
 				}
 			}
@@ -221,11 +230,17 @@ void make_smart_guess(int curGuessI,
 		printf("%d ", definitePositions[i]);
 	}
 	printf("\n");
+	for (int i = 0; i < numUniqDefiniteColors; i++) {
+		printf("%d ", definiteColors[i]);
+	}
+	printf("\n");
 
 	int definiteColorCnt = 0;
 	bool posTaken[CODE_LENGTH] = {false};
 	int numPosTaken = 0;
 
+	if (numDefinitePositions == 0) goto shuffle_definite_colors;
+	// put definite positions first
 	for (int pos = 0; pos < CODE_LENGTH; pos++) {
 		if (definitePositions[pos] != INDEFINITE) {
 			posTaken[pos] = true;
@@ -233,26 +248,39 @@ void make_smart_guess(int curGuessI,
 			curGuess[pos] = definitePositions[pos];
 		}
 	}
+	if (numDefinitePositions == CODE_LENGTH) return;
 
+// shuffle definite colors with indefinite positions
+shuffle_definite_colors:
+	if (numDefiniteColors - numDefinitePositions == 0) goto put_indefinite_color;
 	int randNum = rand();
 	printf("%d\n", randNum);
+
+	int cntDefColors[NUM_WITH_BLANK];
 	for (int i = 0; i < NUM_WITH_BLANK; i++) {
-		int numPosToTake = colorPossibility[i] - numDefPosForColor[i];
-		
-		for (int j = 0; j < numPosToTake; j++) {
-			int randomFactor = randNum % (numPosPosForColor[i] - numPosTaken);
-			int pos = 0;
-			for (; pos < CODE_LENGTH; pos++) {
-				if (!posTaken[pos] && positionPossibility[i][pos] == POSSIBLE) {
-					randomFactor--;
-				}
-				if (randomFactor < 0) break;
+		cntDefColors[i] = colorPossibility[i] - numDefPosForColor[i];
+	}
+
+	for (int pos = 0; pos < CODE_LENGTH; pos++) {
+		if (posTaken[pos]) continue;
+		int availableDefColors[numDefiniteColors];
+		int numAvailable = 0;
+		for (int i = 0; i < numUniqDefiniteColors; i++) {
+			char color = definiteColors[i];
+			if (positionPossibility[color][pos] == POSSIBLE &&
+				cntDefColors[color] > 0)
+			{
+				availableDefColors[numAvailable++] = color;
 			}
-			printf("%d ", pos);
-			posTaken[pos] = true;
-			numPosTaken++;
-			curGuess[pos] = i;
 		}
+		printf("%d ", numAvailable);
+		if (numAvailable == 0) break;
+		char selected = availableDefColors[randNum % numAvailable];
+		randNum /= numAvailable;
+		curGuess[pos] = selected;
+		posTaken[pos] = true;
+		numPosTaken++;
+		cntDefColors[selected]--;
 	}
 	char letters[4];
 	code_to_letters(curGuess, letters);
@@ -260,6 +288,8 @@ void make_smart_guess(int curGuessI,
 
 	if (numDefiniteColors == CODE_LENGTH) return;
 
+// put an indefinite color in the rest
+put_indefinite_color:
 	for (int i = 0; i < NUM_WITH_BLANK; i++) {
 		if (colorPossibility[i] == 0) {
 			for (int pos = 0; pos < CODE_LENGTH; pos++) {
