@@ -1,10 +1,6 @@
-#pragma once
-#include "mastermind.h"
-#include "mastermind_variables.h"
 #include "graphics.h"
-#include "peg.h"
-#include "button.h"
 #include "globals.h"
+#include "../general/graphics.h"
 
 void calculate_graphics_variables() {
 	board_width = 600 * SCALE;

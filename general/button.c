@@ -1,21 +1,6 @@
-#pragma once
+#include "button.h"
 #include "graphics.h"
 #include "mouse_control.h"
-
-typedef enum {
-	BUTTON_NORMAL,
-	BUTTON_CLICKED,
-	BUTTON_RELEASED
-} ButtonState;
-
-typedef struct {
-	SDL_FRect* rect;
-	float* border_width;
-	const SDL_Color* color;
-	const SDL_Color* border_color;
-	int (*action)(ButtonState* state, GameVariables* vars);
-	ButtonState state;
-} Button;
 
 void render_button(SDL_Renderer* renderer, Button* button) {
 	render_rect(renderer, button->rect, *button->border_width,
@@ -23,11 +8,11 @@ void render_button(SDL_Renderer* renderer, Button* button) {
 }
 
 bool try_click_button(float mouseX, float mouseY,
-			Button* button, GameVariables* vars, int* resultPtr)
+			Button* button, void* data, int* resultPtr)
 {
 	if (is_mouse_in_rect(mouseX, mouseY, button->rect)) {
 		button->state = BUTTON_CLICKED;
-		int result = button->action(&button->state, vars);
+		int result = button->action(&button->state, data);
 		if (resultPtr != NULL)
 			*resultPtr = result;
 		return true;
@@ -35,13 +20,13 @@ bool try_click_button(float mouseX, float mouseY,
 }
 
 bool try_release_button(float mouseX, float mouseY,
-			Button* button, GameVariables* vars, int* resultPtr)
+			Button* button, void* data, int* resultPtr)
 {
 	if (button->state != BUTTON_CLICKED)
 		return false;
 	if (is_mouse_in_rect(mouseX, mouseY, button->rect)) {
 		button->state = BUTTON_RELEASED;
-		int result = button->action(&button->state, vars);
+		int result = button->action(&button->state, data);
 		if (resultPtr != NULL)
 			*resultPtr = result;
 		return true;

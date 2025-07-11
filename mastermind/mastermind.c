@@ -1,13 +1,6 @@
-#pragma once
+#include "mastermind.h"
+#include "definitions.h"
 #include <stdio.h>
-#include "mastermind_definitions.h"
-
-typedef enum {
-	GAME_ONGOING,
-	GAME_WON,
-	GAME_LOST,
-	GAME_QUIT
-} GameState;
 
 void check_guess(int* curGuess,
 		char guess[CODE_LENGTH],

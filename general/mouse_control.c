@@ -1,5 +1,4 @@
-#pragma once
-#include "SDL3/SDL.h"
+#include "mouse_control.h"
 
 bool is_mouse_in_circle(float mouseX, float mouseY,
 		float centerX, float centerY, float radius)

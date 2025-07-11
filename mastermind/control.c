@@ -1,8 +1,10 @@
-#pragma once
-#include "mastermind_graphics.h"
-#include "mastermind_codemaker.h"
-#include "mastermind_codebreaker.h"
-#include "mouse_control.h"
+#include "mastermind.h"
+#include "control.h"
+#include "graphics.h"
+#include "codemaker.h"
+#include "codebreaker.h"
+#include "globals.h"
+#include "../general/mouse_control.h"
 
 bool is_mouse_on_peg(float x, float y, Peg* peg) {
 	return is_mouse_in_circle(x, y, peg->x, peg->y,

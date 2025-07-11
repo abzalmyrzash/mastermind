@@ -13,8 +13,4 @@ typedef struct {
 	char* ptr;
 } Peg;
 
-void swap_peg_values(Peg* a, Peg* b) {
-	char tmp = *a->ptr;
-	*a->ptr = *b->ptr;
-	*b->ptr = tmp;
-}
+void swap_peg_values(Peg* a, Peg* b);

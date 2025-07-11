@@ -1,10 +1,14 @@
-#pragma once
-#include "button.h"
-#include "mastermind_variables.h"
-#include "mastermind_graphics.h"
+#include <stdio.h>
+#include "button_actions.h"
+#include "mastermind.h"
+#include "codemaker.h"
+#include "codebreaker.h"
+#include "variables.h"
+#include "graphics.h"
 #include "globals.h"
 
-int check_button_action (ButtonState* buttonState, GameVariables* vars) {
+int check_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED
 		&& vars->gameState == GAME_ONGOING)
 	{
@@ -19,7 +23,8 @@ int check_button_action (ButtonState* buttonState, GameVariables* vars) {
 	return 0;
 }
 
-int reset_button_action (ButtonState* buttonState, GameVariables* vars) {
+int reset_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED) {
 		reset_everything(vars);
 		vars->needsRerender = true;
@@ -28,7 +33,8 @@ int reset_button_action (ButtonState* buttonState, GameVariables* vars) {
 	return 0;
 }
 
-int resign_button_action (ButtonState* buttonState, GameVariables* vars) {
+int resign_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED &&
 		vars->gameState == GAME_ONGOING)
 	{
@@ -40,14 +46,16 @@ int resign_button_action (ButtonState* buttonState, GameVariables* vars) {
 	return 0;
 }
 
-int quit_button_action (ButtonState* buttonState, GameVariables* vars) {
+int quit_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED) {
 		vars->gameState = GAME_QUIT;
 	}
 	return 0;
 }
 
-int random_button_action (ButtonState* buttonState, GameVariables* vars) {
+int random_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED
 		&& vars->gameState == GAME_ONGOING)
 	{
@@ -58,7 +66,8 @@ int random_button_action (ButtonState* buttonState, GameVariables* vars) {
 	return 0;
 }
 
-int smart_button_action (ButtonState* buttonState, GameVariables* vars) {
+int smart_button_action (ButtonState* buttonState, void* data) {
+	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED
 		&& vars->gameState == GAME_ONGOING)
 	{

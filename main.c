@@ -1,6 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
-#include "mastermind_control.h"
-#include "button_actions.h"
+#include <SDL3/SDL.h>
+#include "mastermind/globals.h"
+#include "mastermind/graphics.h"
+#include "mastermind/control.h"
+#include "mastermind/button_actions.h"
 
 int main() {
 	srand(time(NULL));
@@ -26,8 +31,6 @@ int main() {
 	init_buttons();
 
 	render_everything(&vars);
-
-	char guess_str[4], guess[4], key[4];
 
 	SDL_Event e;
 	float mouseX, mouseY;

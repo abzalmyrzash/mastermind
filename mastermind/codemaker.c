@@ -1,6 +1,5 @@
-#pragma once
+#include "codemaker.h"
 #include <stdlib.h>
-#include <stdbool.h>
 
 /*
 	Following functions don't really generate a code from scratch,

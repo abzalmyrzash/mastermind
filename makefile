@@ -1,2 +1,2 @@
-a.out: main.c *.h
-	gcc main.c -lm -lSDL3
+a.out: main.c general/* mastermind/*
+	gcc main.c general/*.c mastermind/*.c -lm -lSDL3
