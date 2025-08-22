@@ -37,9 +37,11 @@ void index_to_code(int index, char code[CODE_LENGTH]) {
 void reset_code_breaker() {
 	prevGuessI = 0;
 	numPossibleCodes = CODE_SPACE;
+	possibleCodeI = 0;
 
 	for (int i = 0; i < CODE_SPACE; i++) {
 		codePossibility[i] = true;
+		possibleCodes[i] = i;
 	}
 }
 
@@ -47,18 +49,19 @@ void analyze_prev_guesses(int curGuessI,
 	char guesses[NUM_GUESSES][CODE_LENGTH],
 	char keys[NUM_GUESSES][CODE_LENGTH])
 {
+	int possibleCodeCnt = 0;
 	for (int i = prevGuessI; i < curGuessI; i++) {
 		char* guess = guesses[i];
-		int numCorrectColors = 0;
-		int numCorrectPos = 0;
+		int correctColors = 0;
+		int correctPos = 0;
 	
 		for (int j = 0; j < CODE_LENGTH; j++) {
 			if (keys[i][j] == KEY_RED) {
-				numCorrectPos++;
-				numCorrectColors++;
+				correctPos++;
+				correctColors++;
 			}
 			else if (keys[i][j] == KEY_WHITE) {
-				numCorrectColors++;
+				correctColors++;
 			}
 		}
 
@@ -67,6 +70,7 @@ void analyze_prev_guesses(int curGuessI,
 		for (int j = 0; j < CODE_LENGTH; j++) {
 			guessColorCnt[guess[j]]++;
 		}
+		possibleCodeCnt = 0;
 		for (int c = 0; c < CODE_SPACE; c++) {
 			if (!codePossibility[c]) continue;
 			int matchingPos = 0;
@@ -86,28 +90,30 @@ void analyze_prev_guesses(int curGuessI,
 					matchingColors += codeColorCnt[j];
 				}
 			}
-			if (matchingColors != numCorrectColors || matchingPos != numCorrectPos) {
+			if (matchingColors != correctColors || matchingPos != correctPos) {
 				codePossibility[c] = false;
 				numPossibleCodes--;
+			}
+			else {
+				possibleCodes[possibleCodeCnt++] = c;
 			}
 		}
 	}
 	prevGuessI = curGuessI;
+	printf("Number of possible codes: %d\n", numPossibleCodes);
 }
 
 void make_smart_guess(int curGuessI,
 	char guesses[NUM_GUESSES][CODE_LENGTH],
 	char keys[NUM_GUESSES][CODE_LENGTH])
 {
-	analyze_prev_guesses(curGuessI, guesses, keys);
+	if (prevGuessI < curGuessI) {
+		analyze_prev_guesses(curGuessI, guesses, keys);
+		possibleCodeI = 0;
+	}
 
 	char* curGuess = guesses[curGuessI];
-	printf("Number of possible codes: %d\n", numPossibleCodes);
-
-	for (int i = 0; i < CODE_SPACE; i++) {
-		if(codePossibility[i]) {
-			index_to_code(i, curGuess);
-			return;
-		}
-	}
+	int c = possibleCodes[possibleCodeI++];
+	possibleCodeI %= numPossibleCodes;
+	index_to_code(c, curGuess);
 }

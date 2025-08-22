@@ -17,10 +17,14 @@ void index_to_code(int index, char code[CODE_LENGTH]);
 #define INDEFINITE -1
 
 static bool codePossibility[CODE_SPACE];
-static int numPossibleCodes = 0;
+static int numPossibleCodes;
+static int possibleCodes[CODE_SPACE];
 
 // used for continuing analysis where it last left off
 static int prevGuessI;
+
+// used for cycling through possible codes
+static int possibleCodeI;
 
 void reset_code_breaker();
 
