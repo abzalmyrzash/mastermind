@@ -17,6 +17,7 @@ int check_button_action (ButtonState* buttonState, void* data) {
 					vars->code,
 					vars->keys[vars->curGuess],
 					&vars->gameState);
+		vars->cursor = 0;
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
@@ -27,7 +28,6 @@ int reset_button_action (ButtonState* buttonState, void* data) {
 	GameVariables* vars = (GameVariables*)data;
 	if (*buttonState == BUTTON_RELEASED) {
 		reset_everything(vars);
-		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
 	return 0;
@@ -60,6 +60,7 @@ int random_button_action (ButtonState* buttonState, void* data) {
 		&& vars->gameState == GAME_ONGOING)
 	{
 		make_random_guess(vars->curGuess, vars->guesses);
+		vars->cursor = CODE_LENGTH;
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}
@@ -72,6 +73,7 @@ int smart_button_action (ButtonState* buttonState, void* data) {
 		&& vars->gameState == GAME_ONGOING)
 	{
 		make_smart_guess(vars->curGuess, vars->guesses, vars->keys);
+		vars->cursor = CODE_LENGTH;
 		vars->needsRerender = true;
 		*buttonState = BUTTON_NORMAL;
 	}

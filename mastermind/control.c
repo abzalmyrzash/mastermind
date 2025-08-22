@@ -84,6 +84,16 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 	case SDLK_ESCAPE:
 		vars->gameState = GAME_QUIT;
 		break;
+	case SDLK_SPACE:
+		reset_everything(vars);
+		vars->needsRerender = true;
+		break;
+	default:
+		break;
+	}
+	if (vars->gameState != GAME_ONGOING) return;
+	switch(key)
+	{
 	case SDLK_RETURN:
 		check_guess(&vars->curGuess,
 					vars->guesses[vars->curGuess],
@@ -91,17 +101,20 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 					vars->keys[vars->curGuess],
 					&vars->gameState);
 		vars->needsRerender = true;
+		vars->cursor = 0;
 		break;
 	case SDLK_R:
 		make_random_guess(vars->curGuess, vars->guesses);
 		vars->needsRerender = true;
+		vars->cursor = CODE_LENGTH;
 		break;
 	case SDLK_B:
 		make_smart_guess(vars->curGuess, vars->guesses, vars->keys);
 		vars->needsRerender = true;
+		vars->cursor = CODE_LENGTH;
 		break;
-	case SDLK_SPACE:
-		reset_everything(vars);
+	case SDLK_L:
+		vars->gameState = GAME_LOST;
 		vars->needsRerender = true;
 		break;
 	case SDLK_DELETE:
