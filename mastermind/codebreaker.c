@@ -68,6 +68,7 @@ void analyze_prev_guesses(int curGuessI,
 			guessColorCnt[guess[j]]++;
 		}
 		for (int c = 0; c < CODE_SPACE; c++) {
+			if (!codePossibility[c]) continue;
 			int matchingPos = 0;
 			int matchingColors = 0;
 			unsigned char codeColorCnt[NUM_WITH_BLANK] = {0};
@@ -86,10 +87,8 @@ void analyze_prev_guesses(int curGuessI,
 				}
 			}
 			if (matchingColors != numCorrectColors || matchingPos != numCorrectPos) {
-				if (codePossibility[c]) {
-					codePossibility[c] = false;
-					numPossibleCodes--;
-				}
+				codePossibility[c] = false;
+				numPossibleCodes--;
 			}
 		}
 	}
