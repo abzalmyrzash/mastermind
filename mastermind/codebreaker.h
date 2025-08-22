@@ -11,11 +11,6 @@ int code_to_index(char code[CODE_LENGTH]);
 // reverse
 void index_to_code(int index, char code[CODE_LENGTH]);
 
-#define IMPOSSIBLE -1
-#define POSSIBLE 0
-#define DEFINITE 1
-#define INDEFINITE -1
-
 static bool codePossibility[CODE_SPACE];
 static int numPossibleCodes;
 static int possibleCodes[CODE_SPACE];
