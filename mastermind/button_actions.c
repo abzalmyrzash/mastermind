@@ -87,4 +87,11 @@ void init_buttons() {
 	smart_button.action = smart_button_action;
 	reset_button.action = reset_button_action;
 	quit_button.action = quit_button_action;
+
+	check_button.state = BUTTON_NORMAL;
+	resign_button.state = BUTTON_NORMAL;
+	random_button.state = BUTTON_NORMAL;
+	smart_button.state = BUTTON_NORMAL;
+	reset_button.state = BUTTON_NORMAL;
+	quit_button.state = BUTTON_NORMAL;
 }

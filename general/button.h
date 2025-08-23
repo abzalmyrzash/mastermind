@@ -8,8 +8,8 @@ typedef enum {
 } ButtonState;
 
 typedef struct {
-	SDL_FRect* rect;
-	float* border_width;
+	SDL_FRect rect;
+	float border_width;
 	const SDL_Color* color;
 	const SDL_Color* border_color;
 	int (*action)(ButtonState* state, void* data);
