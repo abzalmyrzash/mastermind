@@ -1,11 +1,15 @@
-#pragma once
 #include "definitions.h"
+#pragma once
 #include "variables.h"
 #include "../general/button.h"
 
+void init_graphics_variables(char guesses[NUM_GUESSES][CODE_LENGTH]);
+
 void calculate_graphics_variables();
 
-void init_graphics_variables(char guesses[NUM_GUESSES][CODE_LENGTH]);
+void create_textures(SDL_Renderer* renderer);
+
+void destroy_textures();
 
 void render_selection(SDL_Renderer* renderer, Peg* selectedPeg);
 

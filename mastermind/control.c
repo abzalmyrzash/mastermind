@@ -4,6 +4,7 @@
 #include "codemaker.h"
 #include "codebreaker.h"
 #include "globals.h"
+#include "stdio.h"
 #include "../general/mouse_control.h"
 
 bool is_mouse_on_peg(float x, float y, Peg* peg) {
@@ -79,7 +80,8 @@ void onRelease(float x, float y, GameVariables* vars) {
 }
 
 void onKeyDown(SDL_Keycode key, GameVariables* vars) {
-	switch(key)
+	// can be processed even if game is finished
+	switch (key)
 	{
 	case SDLK_ESCAPE:
 		vars->gameState = GAME_QUIT;
@@ -91,7 +93,10 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 	default:
 		break;
 	}
+
 	if (vars->gameState != GAME_ONGOING) return;
+
+	// can be processed only if game is ongoing
 	switch(key)
 	{
 	case SDLK_RETURN:
@@ -107,20 +112,25 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 		vars->needsRerender = true;
 		vars->cursor = 0;
 		break;
+
 	case SDLK_R:
 		make_random_guess(vars->curGuess, vars->guesses);
 		vars->needsRerender = true;
 		vars->cursor = CODE_LENGTH;
 		break;
+
 	case SDLK_B:
 		make_smart_guess(vars->curGuess, vars->guesses, vars->keys);
 		vars->needsRerender = true;
 		vars->cursor = CODE_LENGTH;
 		break;
-	case SDLK_L:
+
+	case SDLK_S:
 		vars->gameState = GAME_LOST;
+		printf("YOU RESIGNED!\n");
 		vars->needsRerender = true;
 		break;
+
 	case SDLK_DELETE:
 		for (int i = 0; i < CODE_LENGTH; i++) {
 			(vars->guesses)[vars->curGuess][i] = CODE_BLANK;
@@ -128,15 +138,18 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 		vars->cursor = 0;
 		vars->needsRerender = true;
 		break;
+
 	case SDLK_BACKSPACE:
 		if (--(vars->cursor) < 0) vars->cursor = 0;
 		vars->guesses[vars->curGuess][vars->cursor] = CODE_BLANK;
 		vars->needsRerender = true;
 		break;
+
 	case SDLK_SLASH:
 		SDL_StartTextInput(vars->window);
 		vars->textInput = true;
 		break;
+
 	default:
 		if (key >= SDLK_0 && key <= SDLK_6) {
 			if (vars->cursor >= CODE_LENGTH) {
@@ -149,8 +162,8 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 			if (value < 0) value = CODE_BLANK;
 			vars->guesses[vars->curGuess][vars->cursor] = value;
 			(vars->cursor)++;
+			vars->needsRerender = true;
 		}
-		vars->needsRerender = true;
 		break;
 	}
 }

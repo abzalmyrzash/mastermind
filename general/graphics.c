@@ -9,14 +9,14 @@ void render_rect(SDL_Renderer* renderer,
 			SDL_FRect* rect, int width,
 			const SDL_Color* color, const SDL_Color* borderColor)
 {
-	if (borderColor != NULL) set_color(renderer, borderColor);
-	for (int i = 1; i <= width; i++) {
-		SDL_FRect borderRect = {rect->x - i, rect->y - i,
-								rect->w + 2*i, rect->h + 2*i};
-		SDL_RenderRect(renderer, &borderRect);
-	}
 	if (color != NULL) set_color(renderer, color);
 	SDL_RenderFillRect(renderer, rect);
+	if (borderColor != NULL) set_color(renderer, borderColor);
+	for (int i = 0; i < width; i++) {
+		SDL_FRect borderRect = {rect->x + i, rect->y + i,
+								rect->w - 2*i, rect->h - 2*i};
+		SDL_RenderRect(renderer, &borderRect);
+	}
 }
 
 void render_circle(SDL_Renderer* renderer,

@@ -73,7 +73,7 @@ void reset_game(GameState* state, int* curGuess,
 	for (int i = 0; i < NUM_GUESSES; i++) {
 		for (int j = 0; j < CODE_LENGTH; j++) {
 			guesses[i][j] = CODE_BLANK;
-			keys[i][j] = CODE_BLANK;
+			keys[i][j] = KEY_BLANK;
 		}
 	}
 }

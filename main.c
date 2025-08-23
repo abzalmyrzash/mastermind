@@ -31,6 +31,8 @@ int main() {
 	init_graphics_variables(vars.guesses);
 	init_buttons();
 
+	create_textures(renderer);
+
 	render_everything(&vars);
 
 	SDL_Event e;
@@ -48,6 +50,8 @@ int main() {
 		case SDL_EVENT_WINDOW_RESIZED:
 			SDL_GetWindowSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 			calculate_graphics_variables();
+			destroy_textures();
+			create_textures(renderer);
 			render_everything(&vars);
 	    case SDL_EVENT_KEY_DOWN:
 			onKeyDown(e.key.key, &vars);
@@ -74,6 +78,7 @@ int main() {
 		render_everything(&vars);
 	}
 	SDL_DestroyWindow(window);
+	destroy_textures();
 	SDL_Quit();
 	return 0;
 }
