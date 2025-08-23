@@ -14,6 +14,8 @@ typedef struct {
 	int cursor;
 	SDL_Renderer* renderer;
 	bool needsRerender;
+	SDL_Window* window;
+	bool textInput;
 } GameVariables;
 
 void reset_everything(GameVariables* vars);

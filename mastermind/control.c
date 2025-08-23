@@ -95,6 +95,10 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 	switch(key)
 	{
 	case SDLK_RETURN:
+		if (vars->textInput) {
+			vars->textInput = false;
+			SDL_StopTextInput(vars->window);
+		}
 		check_guess(&vars->curGuess,
 					vars->guesses[vars->curGuess],
 					vars->code,
@@ -128,6 +132,10 @@ void onKeyDown(SDL_Keycode key, GameVariables* vars) {
 		if (--(vars->cursor) < 0) vars->cursor = 0;
 		vars->guesses[vars->curGuess][vars->cursor] = CODE_BLANK;
 		vars->needsRerender = true;
+		break;
+	case SDLK_SLASH:
+		SDL_StartTextInput(vars->window);
+		vars->textInput = true;
 		break;
 	default:
 		if (key >= SDLK_0 && key <= SDLK_6) {

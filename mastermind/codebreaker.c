@@ -71,8 +71,8 @@ void analyze_prev_guesses(int curGuessI,
 			guessColorCnt[guess[j]]++;
 		}
 		possibleCodeCnt = 0;
-		for (int c = 0; c < CODE_SPACE; c++) {
-			if (!codePossibility[c]) continue;
+		for (int j = 0; j < numPossibleCodes; j++) {
+			int c = possibleCodes[j];
 			int matchingPos = 0;
 			int matchingColors = 0;
 			unsigned char codeColorCnt[NUM_WITH_BLANK] = {0};
@@ -92,12 +92,12 @@ void analyze_prev_guesses(int curGuessI,
 			}
 			if (matchingColors != correctColors || matchingPos != correctPos) {
 				codePossibility[c] = false;
-				numPossibleCodes--;
 			}
 			else {
 				possibleCodes[possibleCodeCnt++] = c;
 			}
 		}
+		numPossibleCodes = possibleCodeCnt;
 	}
 	prevGuessI = curGuessI;
 	printf("Number of possible codes: %d\n", numPossibleCodes);

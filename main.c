@@ -23,6 +23,7 @@ int main() {
 
 	GameVariables vars;
 	vars.renderer = renderer;
+	vars.window = window;
 	vars.peg = NULL;
 
 	reset_everything(&vars);
@@ -50,6 +51,10 @@ int main() {
 			render_everything(&vars);
 	    case SDL_EVENT_KEY_DOWN:
 			onKeyDown(e.key.key, &vars);
+			break;
+		case SDL_EVENT_TEXT_INPUT:
+			printf(e.text.text);
+			printf("\n");
 			break;
 	    case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			SDL_GetMouseState(&mouseX, &mouseY);
