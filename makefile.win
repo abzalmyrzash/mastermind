@@ -1,0 +1,2 @@
+a.exe: main.c general/*.c mastermind/*.c
+	gcc main.c mastermind/*.c general/*.c -lSDL3 -LC:\libs\SDL3-3.2.20\x86_64-w64-mingw32\lib -IC:\libs\SDL3-3.2.20\x86_64-w64-mingw32\include

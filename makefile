@@ -1,2 +1,4 @@
-a.out: main.c general/* mastermind/*
-	gcc main.c general/*.c mastermind/*.c -lm -lSDL3
+nix:
+	make -f makefile.nix
+win:
+	make -f makefile.win
