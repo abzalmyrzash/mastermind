@@ -1,4 +1,0 @@
-win: main.c general/* mastermind/*
-		gcc main.c mastermind/*.c general/*.c -lSDL3 -LC:\libs\SDL3-3.2.20\x86_64-w64-mingw32\lib -IC:\libs\SDL3-3.2.20\x86_64-w64-mingw32\include -o mastermind.exe
-linux: main.c general/* mastermind/*
-		gcc main.c general/*.c mastermind/*.c -lm -lSDL3
